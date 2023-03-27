@@ -1,2 +1,0 @@
-const t=document.querySelector(".quote"),e=document.querySelector(".quoteAuthor"),o={method:"GET",headers:{"X-RapidAPI-Key":"6e52bcb19emsh65968e54358a7e0p173aa3jsn04868ace3acf","X-RapidAPI-Host":"quotes15.p.rapidapi.com"}};(async function(){const t=await fetch("https://quotes15.p.rapidapi.com/quotes/random/",o);if(t.ok)return t.json();throw new Error(t.status)})().then((o=>{console.log(o),t.textContent=o.content,e.textContent+=o.originator.name})).catch((t=>console.error(t)));
-//# sourceMappingURL=index.4df621a2.js.map
