@@ -1,31 +1,49 @@
-const quoteEl = document.querySelector(".quote");
-const authorEl = document.querySelector(".quoteAuthor");
+import * as API from './fetchData';
+const quoteEl = document.querySelector('.quote');
+const authorEl = document.querySelector('.quoteAuthor');
+const buttonsBlockEl = document.querySelector('.buttonsBlock');
+const randomQuoteEl = document.querySelector('.button[random-quote]');
+const moreQuotesEl = document.querySelector('.button[more-quotes]');
 
-const options = {
-  method: "GET",
-  headers: {
-    "X-RapidAPI-Key": "6e52bcb19emsh65968e54358a7e0p173aa3jsn04868ace3acf",
-    "X-RapidAPI-Host": "quotes15.p.rapidapi.com",
-  },
-};
-
-async function getQuote() {
-  const response = await fetch(
-    "https://quotes15.p.rapidapi.com/quotes/random/",
-    options
-  );
-  if (!response.ok) {
-    throw new Error(response.status);
-  } else return response.json();
-}
+let quoteCounter = 0;
+let quotesStorage = [];
+let page = 0;
 
 function newQuote() {
-  getQuote()
-    .then((data) => {
-      console.log(data);
+  API.getQuote()
+    .then(data => {
       quoteEl.textContent = data.content;
+      authorEl.textContent = '- ';
       authorEl.textContent += data.originator.name;
+      buttonsBlockEl.style.display = 'flex';
+      buttonsBlockEl.style.position = 'absolute';
+      quoteCounter = 0;
+      quotesStorage = [];
     })
-    .catch((err) => console.error(err));
+    .catch(err => console.error(err));
 }
 newQuote();
+
+randomQuoteEl.addEventListener('click', () => newQuote());
+
+moreQuotesEl.addEventListener('click', () => {
+  if (quoteCounter === 0 || quoteCounter === quotesStorage.length) {
+    const author = authorEl.textContent.slice(2).toLowerCase();
+
+    API.getMoreQuotes(author, page)
+      .then(data => {
+        quoteCounter = 0;
+        page++;
+        quotesStorage = data;
+        render();
+      })
+      .catch(err => console.error(err));
+  } else render();
+});
+
+function render() {
+  quoteEl.textContent = quotesStorage[quoteCounter].quote;
+  authorEl.textContent = '- ';
+  authorEl.textContent += quotesStorage[quoteCounter].name;
+  quoteCounter++;
+}
